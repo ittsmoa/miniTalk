@@ -10,11 +10,11 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include <unistd.h>
 #include <signal.h>
 #include <stdlib.h>
+#include <unistd.h>
 
-volatile sig_atomic_t g_ack = 0;
+volatile sig_atomic_t	g_ack = 0;
 
 static int	ft_atoi(const char *str)
 {
@@ -37,15 +37,14 @@ static void	ack_handler(int sig)
 
 static void	send_char(int server_pid, unsigned char c)
 {
-	int		i;
-	int		bit;
+	int			i;
+	int			bit;
 	sigset_t	mask;
 	sigset_t	oldmask;
 
 	sigemptyset(&mask);
 	sigaddset(&mask, SIGUSR1);
 	sigprocmask(SIG_BLOCK, &mask, &oldmask);
-
 	i = 7;
 	while (i >= 0)
 	{
@@ -70,7 +69,6 @@ int	main(int argc, char **argv)
 
 	if (argc != 3)
 		return (1);
-
 	server_pid = ft_atoi(argv[1]);
 	sa.sa_handler = ack_handler;
 	sigemptyset(&sa.sa_mask);
@@ -85,6 +83,3 @@ int	main(int argc, char **argv)
 	send_char(server_pid, '\0');
 	return (0);
 }
-
-
-
