@@ -1,42 +1,76 @@
 *This project has been created as part of the 42 curriculum by moatieh*
 
-# push_swap
-
+# minitalk
 
 ## Description
 
-push_swap is a sorting algorithm project that sorts a stack of integers using a limited set of operations in the minimum number of moves.
+minitalk is a client-server communication program that transmits strings using only UNIX signals. The project demonstrates inter-process communication (IPC) using signals to send data bit by bit.
 
 The project includes:
-- **push_swap**: Outputs the optimal sequence of operations to sort a list of integers
-- **checker**: Verifies if a sequence of operations correctly sorts the stack
+- **server**: Receives and displays messages sent by clients, displays its PID on startup
+- **client**: Sends strings to the server using the server's PID
 
-Available operations:
-- `sa`, `sb`, `ss`: swap first two elements
-- `pa`, `pb`: push top element between stacks
-- `ra`, `rb`, `rr`: rotate stack up
-- `rra`, `rrb`, `rrr`: rotate stack down
+Available signals:
+- `SIGUSR1`: represents bit 0
+- `SIGUSR2`: represents bit 1
 
-This implementation uses a **chunking sort algorithm** that divides the stack into chunks, pushes them to stack B by value ranges, then pushes them back to stack A in sorted order.
+This implementation uses a **bit-by-bit transmission algorithm** where each character is broken down into 8 bits and sent sequentially using UNIX signals. The server reconstructs the character from the received bits and displays the complete message.
 
-**Indexing:** Maps input values to their sorted positions (0 to n-1)
+**Communication Flow:** Client sends each character as 8 bits (MSB first) → Server receives bits and reconstructs characters → Server acknowledges each bit with SIGUSR1
 
 ## Instructions
 
 ### Compilation
 ```bash
-make        # creates push_swap
-make bonus  # creates checker
+make        # creates both server and client
 ```
 
 ### Usage
 ```bash
-./push_swap 3 2 5 1 4
-./push_swap 3 2 5 1 4 | ./checker 3 2 5 1 4  # outputs OK or KO
+# Terminal 1 - Start the server
+./server
+# Output: Server PID: 12345
+
+# Terminal 2 - Send a message
+./client 12345 "Hello, World!"
+# Server displays: Hello, World!
 ```
+
+### Example
+```bash
+./server
+Server PID: 54321
+
+# In another terminal:
+./client 54321 "42 Network"
+# Server terminal will display: 42 Network
+```
+
+## How It Works
+
+1. **Server startup**: Displays its Process ID (PID) and waits for signals
+2. **Client transmission**: 
+   - Takes server PID and message as arguments
+   - Converts each character to binary (8 bits)
+   - Sends each bit using SIGUSR1 (0) or SIGUSR2 (1)
+   - Waits for acknowledgment before sending next bit
+3. **Server reception**:
+   - Receives signals and reconstructs bits into characters
+   - Sends acknowledgment (SIGUSR1) after each bit
+   - Displays complete message when null terminator is received
+
+## Features
+
+- **Signal-based communication** using SIGUSR1 and SIGUSR2
+- **Acknowledgment system** ensures reliable bit transmission
+- **Bit-by-bit encoding** transmits data at the binary level
+- **Synchronous transmission** with blocking until acknowledgment received
+- **Handles multiple messages** server runs continuously
 
 ## Resources
 
-**Algorithm & Sorting:**
-- [Sorting Algorithms - Wikipedia](https://en.wikipedia.org/wiki/Sorting_algorithm)
-- [Chunk Algorithm Guide](https://github.com/anyaschukin/push_swap)
+**Signals & IPC:**
+- [Signal Handling - Wikipedia](https://en.wikipedia.org/wiki/Signal_(IPC))
+- [UNIX Signal Programming Guide](https://www.gnu.org/software/libc/manual/html_node/Signal-Handling.html)
+- [sigaction man page](https://man7.org/linux/man-pages/man2/sigaction.2.html)
+- [Bitwise Operations Tutorial](https://en.wikipedia.org/wiki/Bitwise_operation)
