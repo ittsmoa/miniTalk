@@ -6,7 +6,7 @@
 /*   By: moatieh <moatieh@student.42amman.com>      +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/01/17 04:59:28 by moatieh           #+#    #+#             */
-/*   Updated: 2026/01/17 04:59:28 by moatieh          ###   ########.fr       */
+/*   Updated: 2026/01/24 18:20:30 by moatieh          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,6 +68,8 @@ int	main(int argc, char **argv)
 	struct sigaction	sa;
 
 	if (argc != 3)
+		return (1);
+	if (ft_atoi(argv[1]) <= 0)
 		return (1);
 	server_pid = ft_atoi(argv[1]);
 	sa.sa_handler = ack_handler;
